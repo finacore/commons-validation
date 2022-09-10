@@ -31,7 +31,7 @@ func New() *costomValidator {
 	return cv
 }
 
-func (cv *costomValidator) ValidateModel(model interface{}) *costomValidator {
+func (cv *costomValidator) Model(model interface{}) *costomValidator {
 	if model == nil {
 		return cv
 	}
@@ -47,9 +47,9 @@ func (cv *costomValidator) ValidateModel(model interface{}) *costomValidator {
 
 func (cv *costomValidator) HasError() bool { return len(cv.validationErros) > 0 }
 
-func (cv *costomValidator) GetErrors() []commonserrors.ValidationError { return cv.validationErros }
+func (cv *costomValidator) Errors() []commonserrors.ValidationError { return cv.validationErros }
 
-func (cv *costomValidator) GetFirstError() *commonserrors.ValidationError {
+func (cv *costomValidator) FirstError() *commonserrors.ValidationError {
 	if cv.HasError() {
 		return &cv.validationErros[0]
 	}
@@ -58,7 +58,6 @@ func (cv *costomValidator) GetFirstError() *commonserrors.ValidationError {
 }
 
 func (cv *costomValidator) createErrorArray(err error) {
-
 	var validationErrors validator.ValidationErrors
 	errs.As(err, &validationErrors)
 
