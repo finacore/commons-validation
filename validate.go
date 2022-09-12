@@ -1,67 +1,50 @@
+// commonserrors package was created with intent to standardizing a way to execute the data
+// structure validation processo that returns the validation erros every in the same way and
+// in the same language.
+//
+// by convention, the english language was choosen as a default and unique language. Case your
+// code want to use a diferente language the better for you is do not use this library and and
+// choose to use the standard form of the go-playground/validator library
 package commonsvalidation
 
 import (
-	errs "errors"
-
-	commonserrors "github.com/finacore/commons-errors"
-	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
-var Validate = validator.New()
-
-//createTranslator function that obtain the translation
-func createTranslator() ut.Translator {
-	english := en.New()
-	uni := ut.New(english, english)
-	trans, _ := uni.GetTranslator("en")
-
-	_ = en_translations.RegisterDefaultTranslations(Validate, trans)
-
-	return trans
+// customValidator data structure that store the validator.Validate and ut.Translator objects, as
+// well the list o of commonserrors.validationErros populated after execution of  Model method.
+//
+// This data structure is not public to avoid the programers create it directly, this way to create
+// a instance of this struct is necessary call the New function.
+type customValidator struct {
+	validate   *validator.Validate
+	translator ut.Translator
 }
 
-//createErrorArray function to create an CustomError array based on an
-//error received by parameter
-func createErrorArray(err error) []commonserrors.ValidationError {
-	var errorArray []commonserrors.ValidationError
+// New has the responsibility to create and instantiate the data structure that  able to create a pre
+// convfigured validator that translate the errors to human english language.
+func New() *customValidator {
+	cv := &customValidator{}
 
-	var validationErrors validator.ValidationErrors
-	errs.As(err, &validationErrors)
+	cv.validate = validator.New()
+	cv.translator = createTranslator(cv.validate)
 
-	for _, errElement := range validationErrors {
-		translator := createTranslator()
-
-		customError := commonserrors.CreateValidationError(
-			errElement.StructNamespace(),
-			errElement.Translate(translator),
-		)
-
-		// customError := newValidateError(errElement)
-		errorArray = append(errorArray, *customError)
-	}
-
-	return errorArray
+	return cv
 }
 
-//Run function to perform the struct validation. This function returns an error
-//array nil.
-func ValidateModel(model interface{}) []commonserrors.ValidationError {
+// Model validator execute the validation of model passed by parameter. Once this method is called, the
+// result is stored internaly in the data structure
+func (cv *customValidator) Model(model interface{}) validatorResult {
 	if model == nil {
-		return nil
+		return validatorResult{}
 	}
 
-	err := Validate.Struct(model)
+	err := cv.validate.Struct(model)
 
 	if err != nil {
-		array := createErrorArray(err)
-
-		if len(array) > 0 {
-			return array
-		}
+		return createErrorArray(err, cv.translator)
 	}
 
-	return nil
+	return validatorResult{}
 }
