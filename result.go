@@ -22,13 +22,3 @@ func (vr validatorResult) HasError() bool { return vr.Count() > 0 }
 // Errors return the commonserrors.ValidationError array containing all errors returned by the
 // execution of validation process
 func (vr validatorResult) Errors() []commonserrors.ValidationError { return vr }
-
-// FirstError returns the first error returned by the validation process. in case of no error
-// returned it'll return nil
-func (cv validatorResult) FirstError() *commonserrors.ValidationError {
-	if cv.HasError() {
-		return &cv[0]
-	}
-
-	return nil
-}
