@@ -8,22 +8,24 @@
 package commonsvalidation
 
 import (
-	errs "errors"
-
-	commonserrors "github.com/finacore/commons-errors"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 )
 
-type costomValidator struct {
+// customValidator data structure that store the validator.Validate and ut.Translator objects, as
+// well the list o of commonserrors.validationErros populated after execution of  Model method.
+//
+// This data structure is not public to avoid the programers create it directly, this way to create
+// a instance of this struct is necessary call the New function.
+type customValidator struct {
 	validate   *validator.Validate
 	translator ut.Translator
-
-	validationErros []commonserrors.ValidationError
 }
 
-func New() *costomValidator {
-	cv := &costomValidator{}
+// New has the responsibility to create and instantiate the data structure that  able to create a pre
+// convfigured validator that translate the errors to human english language.
+func New() *customValidator {
+	cv := &customValidator{}
 
 	cv.validate = validator.New()
 	cv.translator = createTranslator(cv.validate)
@@ -31,42 +33,18 @@ func New() *costomValidator {
 	return cv
 }
 
-func (cv *costomValidator) Model(model interface{}) *costomValidator {
+// Model validator execute the validation of model passed by parameter. Once this method is called, the
+// result is stored internaly in the data structure
+func (cv *customValidator) Model(model interface{}) validatorResult {
 	if model == nil {
-		return cv
+		return validatorResult{}
 	}
 
 	err := cv.validate.Struct(model)
 
 	if err != nil {
-		cv.createErrorArray(err)
+		return createErrorArray(err, cv.translator)
 	}
 
-	return cv
-}
-
-func (cv *costomValidator) HasError() bool { return len(cv.validationErros) > 0 }
-
-func (cv *costomValidator) Errors() []commonserrors.ValidationError { return cv.validationErros }
-
-func (cv *costomValidator) FirstError() *commonserrors.ValidationError {
-	if cv.HasError() {
-		return &cv.validationErros[0]
-	}
-
-	return nil
-}
-
-func (cv *costomValidator) createErrorArray(err error) {
-	var validationErrors validator.ValidationErrors
-	errs.As(err, &validationErrors)
-
-	for _, errElement := range validationErrors {
-		customError := commonserrors.CreateValidationError(
-			errElement.StructNamespace(),
-			errElement.Translate(cv.translator),
-		)
-
-		cv.validationErros = append(cv.validationErros, *customError)
-	}
+	return validatorResult{}
 }

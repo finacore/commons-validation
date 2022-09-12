@@ -8,6 +8,9 @@
 package commonsvalidation
 
 import (
+	"errors"
+
+	commonserrors "github.com/finacore/commons-errors"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -29,4 +32,25 @@ func createTranslator(validate *validator.Validate) ut.Translator {
 	_ = en_translations.RegisterDefaultTranslations(validate, trans)
 
 	return trans
+}
+
+// createErrorArray has the responsibility to create the arror array based on the response of validation
+// and the given translator.
+func createErrorArray(err error, translator ut.Translator) validatorResult {
+	vr := validatorResult{}
+
+	//transfor the erros to
+	var validationErrors validator.ValidationErrors
+	errors.As(err, &validationErrors)
+
+	for _, errElement := range validationErrors {
+		customError := commonserrors.CreateValidationError(
+			errElement.StructNamespace(),
+			errElement.Translate(translator),
+		)
+
+		vr = append(vr, *customError)
+	}
+
+	return vr
 }
