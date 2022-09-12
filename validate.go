@@ -27,12 +27,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// customValidator data structure that store the validator.Validate and ut.Translator objects, as
+// CustomValidator data structure that store the validator.Validate and ut.Translator objects, as
 // well the list o of commonserrors.validationErros populated after execution of  Model method.
 //
 // This data structure is not public to avoid the programers create it directly, this way to create
 // a instance of this struct is necessary call the New function.
-type customValidator struct {
+type CustomValidator struct {
 	validate   *validator.Validate
 	translator ut.Translator
 }
@@ -43,8 +43,8 @@ type customValidator struct {
 // Usage:
 //
 //	cv := commonsvalidation.New()
-func New() *customValidator {
-	cv := &customValidator{}
+func New() *CustomValidator {
+	cv := &CustomValidator{}
 
 	cv.validate = validator.New()
 	cv.translator = createTranslator(cv.validate)
@@ -59,7 +59,7 @@ func New() *customValidator {
 //
 //	cv := commonsvalidation.New()
 //	vr := cv.Model(yourModel)
-func (cv *customValidator) Model(model interface{}) validatorResult {
+func (cv *CustomValidator) Model(model interface{}) validatorResult {
 	if model == nil {
 		return validatorResult{}
 	}

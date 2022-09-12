@@ -22,11 +22,11 @@
 // documentation to know how to use this packagage.
 package commonsvalidation
 
-import commonserrors "github.com/finacore/commons-errors"
+import CommonsErrors "github.com/finacore/commons-errors"
 
 // validatorResult is da data structure that has a responsibility to store the response of the
 // validation process. This data structure implements some methods to help get access to the data
-type validatorResult []commonserrors.ValidationError
+type validatorResult []CommonsErrors.ValidationError
 
 // Count returns how many validation errors was produced by the validation process execution
 //
@@ -54,4 +54,4 @@ func (vr validatorResult) HasError() bool { return vr.Count() > 0 }
 //	cv := commonsvalidation.New()
 //	vr := cv.Model(yourModel)
 //	errs := vr.Errors()
-func (vr validatorResult) Errors() []commonserrors.ValidationError { return vr }
+func (vr validatorResult) Errors() []CommonsErrors.ValidationError { return vr }
