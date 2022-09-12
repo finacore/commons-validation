@@ -5,6 +5,21 @@
 // by convention, the english language was choosen as a default and unique language. Case your
 // code want to use a diferente language the better for you is do not use this library and and
 // choose to use the standard form of the go-playground/validator library
+//
+// The first step to use this package is to get it through the command below, then you will be
+// able to import it in your code.
+//
+//	go get github.com/finacore/commons-validation
+//
+// To avoid the conflicts between packages during the imnport phase, is strongly recommended
+// select other name for this package in the moment of import like shown below:
+//
+//	import (
+//		commonsvalidation "github.com/finacore/commons-validation"
+//	)
+//
+// Once imported you can use the package as you prefer. So read the function and methods
+// documentation to know how to use this packagage.
 package commonsvalidation
 
 import (
@@ -24,6 +39,10 @@ type customValidator struct {
 
 // New has the responsibility to create and instantiate the data structure that  able to create a pre
 // convfigured validator that translate the errors to human english language.
+//
+// Usage:
+//
+//	cv := commonsvalidation.New()
 func New() *customValidator {
 	cv := &customValidator{}
 
@@ -35,6 +54,11 @@ func New() *customValidator {
 
 // Model validator execute the validation of model passed by parameter. Once this method is called, the
 // result is stored internaly in the data structure
+//
+// Usage:
+//
+//	cv := commonsvalidation.New()
+//	vr := cv.Model(yourModel)
 func (cv *customValidator) Model(model interface{}) validatorResult {
 	if model == nil {
 		return validatorResult{}
