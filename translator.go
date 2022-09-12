@@ -51,8 +51,8 @@ func createTranslator(validate *validator.Validate) ut.Translator {
 
 // createErrorArray has the responsibility to create the arror array based on the response of validation
 // and the given translator.
-func createErrorArray(err error, translator ut.Translator) validatorResult {
-	vr := validatorResult{}
+func createErrorArray(err error, translator ut.Translator) ValidatorResult {
+	vr := ValidatorResult{}
 
 	//transfor the erros to
 	var validationErrors validator.ValidationErrors

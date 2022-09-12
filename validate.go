@@ -59,9 +59,9 @@ func New() *CustomValidator {
 //
 //	cv := commonsvalidation.New()
 //	vr := cv.Model(yourModel)
-func (cv *CustomValidator) Model(model interface{}) validatorResult {
+func (cv *CustomValidator) Model(model interface{}) ValidatorResult {
 	if model == nil {
-		return validatorResult{}
+		return ValidatorResult{}
 	}
 
 	err := cv.validate.Struct(model)
@@ -70,5 +70,5 @@ func (cv *CustomValidator) Model(model interface{}) validatorResult {
 		return createErrorArray(err, cv.translator)
 	}
 
-	return validatorResult{}
+	return ValidatorResult{}
 }
